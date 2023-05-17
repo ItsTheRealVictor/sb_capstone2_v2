@@ -39,10 +39,7 @@ const Sidebar = () => {
         </div>
       </StyledDrawer>
       {/* Main content goes here */}
-      <div style={{ marginLeft: isOpen ? '240px' : 0 }}>
-        <h1>Main Content</h1>
-        <p>Content of the main section of the page.</p>
-      </div>
+
     </div>
   );
 };
