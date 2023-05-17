@@ -1,12 +1,28 @@
-import React from 'react'
+import React, { useState } from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Note from '../components/Note'
 
-function NotesPage() {
+const RandomBoxGenerator = () => {
+  const [notes, setNotes] = useState([]);
+
+  const addNote = () => {
+    const newNote = <Note/>
+
+
+    setNotes([...notes, newNote]);
+  };
+
   return (
-    <>
-    <h1>I am the notes page</h1>
-    
-    </>
-  )
-}
+    <div>
+      <Button variant="contained" onClick={addNote}>
+        Add Note
+      </Button>
+      <div style={{ marginTop: '10px' }}>{notes}</div>
+    </div>
+  );
+};
 
-export default NotesPage
+export default RandomBoxGenerator;
