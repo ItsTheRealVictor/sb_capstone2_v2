@@ -11,11 +11,16 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
   },
 }));
 
-const Sidebar = () => {
+const Sidebar = ( {sidebarItems }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [collections, setCollections] = useState([]);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const addToSidebar = (title) => {
+    setCollections([...collections, title]);
   };
 
   return (
@@ -27,19 +32,15 @@ const Sidebar = () => {
       >
         {isOpen ? 'Hide Sidebar' : 'Show Sidebar'}
       </Button>
-      <StyledDrawer
-        variant="persistent"
-        anchor="left"
-        open={isOpen}
-      >
+      <StyledDrawer variant="persistent" anchor="left" open={isOpen}>
         <div>
           {/* Sidebar content goes here */}
           <h1>Sidebar Content</h1>
-          <p>Some links or other items can be placed here.</p>
+          {sidebarItems.map((title, index) => (
+            <p key={index}>{title}</p>
+          ))}
         </div>
       </StyledDrawer>
-      {/* Main content goes here */}
-
     </div>
   );
 };

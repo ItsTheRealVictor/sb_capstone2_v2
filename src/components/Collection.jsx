@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import TestNote from './TestNote';
+import Note from './Note';
+import { ChromePicker } from 'react-color';
 
-function Collection({ notes }) {
-  const [title, setTitle] = useState('');
+function Collection({ collection, onSaveCollection }) {
+  const [title, setTitle] = useState(collection.title);
   const [showInput, setShowInput] = useState(true);
   const [editing, setEditing] = useState(false);
   const [showEditButton, setShowEditButton] = useState(false);
   const [collectionNotes, setCollectionNotes] = useState([]);
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [tempBackgroundColor, setTempBackgroundColor] = useState(backgroundColor);
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
@@ -20,7 +24,7 @@ function Collection({ notes }) {
     }
   };
 
-  const handleEditTitle = () => {
+  const handleEditCollection = () => {
     setEditing(true);
   };
 
@@ -34,17 +38,48 @@ function Collection({ notes }) {
 
   const handleCancelEdit = () => {
     setEditing(false);
-    setTitle('');
+    setTitle(collection.title);
     setShowInput(true);
   };
 
   const handleAddNote = () => {
-    const newNote = <TestNote key={Date.now()} />;
+    const newNote = <Note key={Date.now()} />;
     setCollectionNotes([...collectionNotes, newNote]);
   };
 
+  const handleOpenColorPicker = () => {
+    setTempBackgroundColor(backgroundColor);
+    setShowColorPicker(true);
+  };
+
+  const handleCancelColorSelection = () => {
+    setShowColorPicker(false);
+  };
+
+  const handleSaveColorSelection = () => {
+    setBackgroundColor(tempBackgroundColor);
+    setShowColorPicker(false);
+  };
+
+  const handleSaveCollection = () => {
+    const updatedCollection = {
+      ...collection,
+      title: title,
+      backgroundColor: backgroundColor,
+      notes: collectionNotes,
+    };
+    onSaveCollection(updatedCollection);
+    setShowInput(true);
+    setTitle('');
+    setCollectionNotes([]);
+  };
+
+  const handleColorChange = (color) => {
+    setTempBackgroundColor(color.hex);
+  };
+
   return (
-    <div>
+    <div style={{ backgroundColor }}>
       {showInput ? (
         <div>
           <input
@@ -73,7 +108,17 @@ function Collection({ notes }) {
               <h3>{title}</h3>
               {showEditButton && (
                 <div>
-                  <button onClick={handleEditTitle}>Edit Title</button>
+                  <button onClick={handleEditCollection}>Edit Collection</button>
+                  {showColorPicker ? (
+                    <div>
+                      <ChromePicker color={tempBackgroundColor} onChange={handleColorChange} />
+                      <button onClick={handleSaveColorSelection}>Save Color</button>
+                      <button onClick={handleCancelColorSelection}>Cancel</button>
+                    </div>
+                  ) : (
+                    <button onClick={handleOpenColorPicker}>Change Background Color</button>
+                  )}
+                  <button onClick={handleSaveCollection}>Save Collection</button>
                 </div>
               )}
             </div>
@@ -83,10 +128,6 @@ function Collection({ notes }) {
 
       {collectionNotes}
       <button onClick={handleAddNote}>Add Note</button>
-
-      {notes.map((note, index) => (
-        <div key={index}>{note}</div>
-      ))}
     </div>
   );
 }
