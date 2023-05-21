@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, Button, TextField } from '@mui/material';
 
-const Note = ({ title, content, onDelete, onUpdateNote }) => {
+const Note = ({ title, content, backgroundColor }) => {
   const [editing, setEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
   const [editedContent, setEditedContent] = useState(content);
@@ -12,17 +12,20 @@ const Note = ({ title, content, onDelete, onUpdateNote }) => {
 
   const handleSaveNote = () => {
     setEditing(false);
-    onUpdateNote(editedTitle, editedContent);
+    // Save the edited title and content
+    setTitle(editedTitle);
+    setContent(editedContent);
   };
 
   const handleCancelEdit = () => {
     setEditing(false);
+    // Reset the edited values back to the original values
     setEditedTitle(title);
     setEditedContent(content);
   };
 
   const handleDeleteNote = () => {
-    onDelete();
+    // Handle deleting the note
   };
 
   const handleTitleChange = (e) => {
@@ -34,7 +37,7 @@ const Note = ({ title, content, onDelete, onUpdateNote }) => {
   };
 
   return (
-    <Card>
+    <Card style={{ backgroundColor }}>
       <CardContent>
         {editing ? (
           <div>

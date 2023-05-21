@@ -1,88 +1,70 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, TextField, Button } from '@mui/material';
-import Note from '../components/Note';
-import Sidebar from '../components/Sidebar';
+import { Button } from '@mui/material';
+import Collection from '../components/Collection';
 
 function NotesPage() {
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState({ title: '', content: '' });
-  const [showNote, setShowNote] = useState(false);
+  const [collections, setCollections] = useState([]);
+  const [showCollectionForm, setShowCollectionForm] = useState(false);
+  const [newCollectionTitle, setNewCollectionTitle] = useState('');
 
-  const handleCreateNote = () => {
-    setShowNote(true);
+  const handleCreateCollection = () => {
+    setShowCollectionForm(true);
   };
 
-  const handleCancelNote = () => {
-    setShowNote(false);
-    setNewNote({ title: '', content: '' });
+  const handleCancelCollection = () => {
+    setShowCollectionForm(false);
+    setNewCollectionTitle('');
   };
 
-  const handleSaveNote = () => {
-    const updatedNotes = [...notes, newNote];
-    setNotes(updatedNotes);
-    setShowNote(false);
-    setNewNote({ title: '', content: '' });
+  const handleSaveCollection = () => {
+    const newCollection = {
+      title: newCollectionTitle,
+      notes: [],
+    };
+    setCollections((prevCollections) => [...prevCollections, newCollection]);
+    setShowCollectionForm(false);
+    setNewCollectionTitle('');
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewNote((prevNote) => ({ ...prevNote, [name]: value }));
+  const handleTitleChange = (e) => {
+    setNewCollectionTitle(e.target.value);
   };
 
-  const handleUpdateNote = (index, updatedTitle, updatedContent) => {
-    const updatedNotes = [...notes];
-    updatedNotes[index] = { ...updatedNotes[index], title: updatedTitle, content: updatedContent };
-    setNotes(updatedNotes);
-  };
-
-  const handleDeleteNote = (index) => {
-    const updatedNotes = notes.filter((_, noteIndex) => noteIndex !== index);
-    setNotes(updatedNotes);
+  const handleCreateNote = (collectionIndex, newNote) => {
+    const updatedCollections = [...collections];
+    updatedCollections[collectionIndex].notes.push(newNote);
+    setCollections(updatedCollections);
   };
 
   return (
     <div>
-      <Sidebar/>
-      {!showNote && (
-        <Button variant="contained" onClick={handleCreateNote}>
-          Create New Note
+      {!showCollectionForm && (
+        <Button variant="contained" onClick={handleCreateCollection}>
+          Create New Collection
         </Button>
       )}
 
-      {showNote && (
+      {showCollectionForm && (
         <div>
-          <Card>
-            <CardContent>
-              <TextField
-                label="Title"
-                name="title"
-                value={newNote.title}
-                onChange={handleChange}
-              />
-              <TextField
-                label="Content"
-                name="content"
-                value={newNote.content}
-                onChange={handleChange}
-              />
-            </CardContent>
-          </Card>
-          <Button variant="contained" onClick={handleSaveNote}>
-            Save Note
+          <input
+            type="text"
+            placeholder="Collection Title"
+            value={newCollectionTitle}
+            onChange={handleTitleChange}
+          />
+          <Button variant="contained" onClick={handleSaveCollection}>
+            Save Collection
           </Button>
-          <Button onClick={handleCancelNote}>Cancel</Button>
+          <Button onClick={handleCancelCollection}>Cancel</Button>
         </div>
       )}
 
-      {notes.map((note, index) => (
-        <Note
+      {collections.map((collection, index) => (
+        <Collection
           key={index}
-          title={note.title}
-          content={note.content}
-          onDelete={() => handleDeleteNote(index)}
-          onUpdateNote={(updatedTitle, updatedContent) =>
-            handleUpdateNote(index, updatedTitle, updatedContent)
-          }
+          title={collection.title}
+          notes={collection.notes}
+          onCreateNote={(newNote) => handleCreateNote(index, newNote)}
         />
       ))}
     </div>
