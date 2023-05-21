@@ -3,7 +3,7 @@ import { Card, CardContent, Typography, Button, TextField } from '@mui/material'
 import { ChromePicker } from 'react-color';
 import Note from './Note';
 
-const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateNote, onAddNote, onDeleteCollection }) => {
+const Collection = ({ title, backgroundColor, notes, onDeleteNote, onUpdateNote, onAddNote }) => {
   const [editingTitle, setEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
   const [editingColor, setEditingColor] = useState(false);
@@ -17,7 +17,11 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
 
   const handleSaveTitle = () => {
     setEditingTitle(false);
-    onUpdateNote(id, { title: editedTitle, backgroundColor: editedColor, notes });
+    onUpdateNote({
+      title: editedTitle,
+      backgroundColor: editedColor,
+      notes,
+    });
   };
 
   const handleCancelEditTitle = () => {
@@ -35,7 +39,11 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
 
   const handleSaveColor = () => {
     setEditingColor(false);
-    onUpdateNote(id, { title: editedTitle, backgroundColor: editedColor, notes });
+    onUpdateNote({
+      title: editedTitle,
+      backgroundColor: editedColor,
+      notes,
+    });
   };
 
   const handleCancelEditColor = () => {
@@ -57,15 +65,11 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
   };
 
   const handleDeleteNote = (noteId) => {
-    onDeleteNote(id, noteId);
+    onDeleteNote(noteId);
   };
 
   const handleUpdateNote = (noteId, updatedTitle, updatedContent) => {
-    onUpdateNote(id, noteId, updatedTitle, updatedContent);
-  };
-
-  const handleDeleteCollection = () => {
-    onDeleteCollection(id);
+    onUpdateNote(noteId, updatedTitle, updatedContent);
   };
 
   return (
@@ -121,9 +125,6 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
             />
             <Button variant="contained" onClick={handleAddNote}>
               Add Note
-            </Button>
-            <Button variant="contained" color="error" onClick={handleDeleteCollection}>
-              Delete Collection
             </Button>
           </div>
         )}
