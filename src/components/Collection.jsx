@@ -88,7 +88,7 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
             <Typography variant="h5" component="div">
               {editedTitle}
             </Typography>
-            <Button onClick={handleEditTitle}>Edit Title</Button>
+            <Button onClick={handleEditTitle}>Edit Collection Title</Button>
             <Button onClick={handleEditColor}>Edit Background Color</Button>
             {editingColor && (
               <div>
