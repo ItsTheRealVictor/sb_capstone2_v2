@@ -3,147 +3,133 @@ import { Card, CardContent, Typography, Button, TextField } from '@mui/material'
 import { ChromePicker } from 'react-color';
 import Note from './Note';
 
-const Collection = ({ title, notes, onCreateNote }) => {
-  const [showNoteForm, setShowNoteForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false);
-  const [newNote, setNewNote] = useState({ title: '', content: '' });
+const Collection = ({ title, backgroundColor, notes, onDeleteNote, onUpdateNote, onAddNote }) => {
+  const [editingTitle, setEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
-  const [editedBackgroundColor, setEditedBackgroundColor] = useState('#ffffff');
+  const [editingColor, setEditingColor] = useState(false);
+  const [editedColor, setEditedColor] = useState(backgroundColor);
+  const [newNoteTitle, setNewNoteTitle] = useState('');
+  const [newNoteContent, setNewNoteContent] = useState('');
 
-  const handleCreateNote = () => {
-    setShowNoteForm(true);
+  const handleEditTitle = () => {
+    setEditingTitle(true);
   };
 
-  const handleCancelNote = () => {
-    setShowNoteForm(false);
-    setNewNote({ title: '', content: '' });
-  };
-
-  const handleSaveNote = () => {
-    onCreateNote({
-      ...newNote,
-      backgroundColor: editedBackgroundColor,
+  const handleSaveTitle = () => {
+    setEditingTitle(false);
+    onUpdateNote({
+      title: editedTitle,
+      backgroundColor: editedColor,
+      notes,
     });
-    setShowNoteForm(false);
-    setNewNote({ title: '', content: '' });
   };
 
-  const handleEditCollection = () => {
-    setShowEditForm(true);
-  };
-
-  const handleCancelEdit = () => {
-    setShowEditForm(false);
+  const handleCancelEditTitle = () => {
+    setEditingTitle(false);
     setEditedTitle(title);
   };
 
-  const handleSaveEdit = () => {
-    // Handle saving the edited collection
-    // You can add the logic here to save the edited title and background color
-    setShowEditForm(false);
+  const handleEditColor = () => {
+    setEditingColor(true);
   };
 
-  const handleTitleChange = (e) => {
-    setEditedTitle(e.target.value);
+  const handleColorChange = (color) => {
+    setEditedColor(color.hex);
   };
 
-  const handleBackgroundColorChange = (color) => {
-    setEditedBackgroundColor(color.hex);
+  const handleSaveColor = () => {
+    setEditingColor(false);
+    onUpdateNote({
+      title: editedTitle,
+      backgroundColor: editedColor,
+      notes,
+    });
+  };
+
+  const handleCancelEditColor = () => {
+    setEditingColor(false);
+    setEditedColor(backgroundColor);
+  };
+
+  const handleAddNote = () => {
+    if (newNoteTitle && newNoteContent) {
+      const newNote = {
+        id: Date.now(),
+        title: newNoteTitle,
+        content: newNoteContent,
+      };
+      onAddNote(newNote);
+      setNewNoteTitle('');
+      setNewNoteContent('');
+    }
+  };
+
+  const handleDeleteNote = (noteId) => {
+    onDeleteNote(noteId);
+  };
+
+  const handleUpdateNote = (noteId, updatedTitle, updatedContent) => {
+    onUpdateNote(noteId, updatedTitle, updatedContent);
   };
 
   return (
-    <div>
-      <div style={{ backgroundColor: editedBackgroundColor }}>
-        <Typography variant="h5" component="div">
-          {editedTitle}
-        </Typography>
-
-        {notes.map((note, index) => (
-          <Note
-            key={index}
-            title={note.title}
-            content={note.content}
-            backgroundColor={editedBackgroundColor}
-          />
-        ))}
-
-        {!showNoteForm && (
-          <Button variant="contained" onClick={handleCreateNote}>
-            Create New Note for {editedTitle}
-          </Button>
-        )}
-
-        <Button variant="contained" onClick={handleEditCollection}>
-          Edit Collection
-        </Button>
-
-        {showNoteForm && (
+    <Card style={{ backgroundColor: editedColor }}>
+      <CardContent>
+        {editingTitle ? (
           <div>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" component="div">
-                  New Note
-                </Typography>
-                <TextField
-                  label="Title"
-                  value={newNote.title}
-                  onChange={(e) =>
-                    setNewNote((prevNote) => ({
-                      ...prevNote,
-                      title: e.target.value,
-                    }))
-                  }
-                />
-                <TextField
-                  label="Content"
-                  value={newNote.content}
-                  onChange={(e) =>
-                    setNewNote((prevNote) => ({
-                      ...prevNote,
-                      content: e.target.value,
-                    }))
-                  }
-                />
-              </CardContent>
-            </Card>
-            <Button variant="contained" onClick={handleSaveNote}>
-              Save Note
+            <TextField
+              label="Title"
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value)}
+            />
+            <Button variant="contained" onClick={handleSaveTitle}>
+              Save Title
             </Button>
-            <Button onClick={handleCancelNote}>Cancel</Button>
+            <Button onClick={handleCancelEditTitle}>Cancel</Button>
+          </div>
+        ) : (
+          <div>
+            <Typography variant="h5" component="div">
+              {editedTitle}
+            </Typography>
+            <Button onClick={handleEditTitle}>Edit Title</Button>
+            <Button onClick={handleEditColor}>Edit Background Color</Button>
+            {editingColor && (
+              <div>
+                <ChromePicker color={editedColor} onChange={handleColorChange} />
+                <Button variant="contained" onClick={handleSaveColor}>
+                  Save Color
+                </Button>
+                <Button onClick={handleCancelEditColor}>Cancel</Button>
+              </div>
+            )}
+            {notes.map((note) => (
+              <Note
+                key={note.id}
+                id={note.id}
+                title={note.title}
+                content={note.content}
+                onDeleteNote={() => handleDeleteNote(note.id)}
+                onUpdateNote={handleUpdateNote}
+              />
+            ))}
+            <TextField
+              label="New Note Title"
+              value={newNoteTitle}
+              onChange={(e) => setNewNoteTitle(e.target.value)}
+            />
+            <TextField
+              label="New Note Content"
+              value={newNoteContent}
+              onChange={(e) => setNewNoteContent(e.target.value)}
+            />
+            <Button variant="contained" onClick={handleAddNote}>
+              Add Note
+            </Button>
           </div>
         )}
-
-        {showEditForm && (
-          <div>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" component="div">
-                  Edit Collection
-                </Typography>
-                <TextField
-                  label="Title"
-                  value={editedTitle}
-                  onChange={handleTitleChange}
-                />
-                <div style={{ marginTop: '1rem' }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Background Color
-                  </Typography>
-                  <ChromePicker
-                    color={editedBackgroundColor}
-                    onChangeComplete={handleBackgroundColorChange}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            <Button variant="contained" onClick={handleSaveEdit}>
-              Save Collection
-            </Button>
-            <Button onClick={handleCancelEdit}>Cancel</Button>
-          </div>
-        )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

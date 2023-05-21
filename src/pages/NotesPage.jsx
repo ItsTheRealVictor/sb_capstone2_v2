@@ -1,74 +1,112 @@
 import React, { useState } from 'react';
-import { Button } from '@mui/material';
 import Collection from '../components/Collection';
 
-function NotesPage() {
+const NotesPage = () => {
   const [collections, setCollections] = useState([]);
-  const [showCollectionForm, setShowCollectionForm] = useState(false);
   const [newCollectionTitle, setNewCollectionTitle] = useState('');
+  const [showCollectionInput, setShowCollectionInput] = useState(false);
 
   const handleCreateCollection = () => {
-    setShowCollectionForm(true);
-  };
-
-  const handleCancelCollection = () => {
-    setShowCollectionForm(false);
-    setNewCollectionTitle('');
+    setShowCollectionInput(true);
   };
 
   const handleSaveCollection = () => {
-    const newCollection = {
-      title: newCollectionTitle,
-      notes: [],
-    };
-    setCollections((prevCollections) => [...prevCollections, newCollection]);
-    setShowCollectionForm(false);
+    if (newCollectionTitle) {
+      const newCollection = {
+        id: Date.now(),
+        title: newCollectionTitle,
+        backgroundColor: getRandomColor(),
+        notes: [],
+      };
+      setCollections((prevCollections) => [...prevCollections, newCollection]);
+      setNewCollectionTitle('');
+      setShowCollectionInput(false);
+    }
+  };
+
+  const handleCancelCollection = () => {
+    setShowCollectionInput(false);
     setNewCollectionTitle('');
   };
 
-  const handleTitleChange = (e) => {
-    setNewCollectionTitle(e.target.value);
+  const handleDeleteNote = (collectionId, noteId) => {
+    const updatedCollections = collections.map((collection) => {
+      if (collection.id === collectionId) {
+        const updatedNotes = collection.notes.filter((note) => note.id !== noteId);
+        return { ...collection, notes: updatedNotes };
+      }
+      return collection;
+    });
+    setCollections(updatedCollections);
   };
 
-  const handleCreateNote = (collectionIndex, newNote) => {
-    const updatedCollections = [...collections];
-    updatedCollections[collectionIndex].notes.push(newNote);
+  const handleUpdateNote = (collectionId, noteId, updatedTitle, updatedContent) => {
+    const updatedCollections = collections.map((collection) => {
+      if (collection.id === collectionId) {
+        const updatedNotes = collection.notes.map((note) => {
+          if (note.id === noteId) {
+            return {
+              ...note,
+              title: updatedTitle,
+              content: updatedContent,
+            };
+          }
+          return note;
+        });
+        return { ...collection, notes: updatedNotes };
+      }
+      return collection;
+    });
     setCollections(updatedCollections);
+  };
+
+  const getRandomColor = () => {
+    const colors = ['#f8e6ea', '#f9e6f5', '#e5e8f8', '#e7f8e8', '#f8f7e5'];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
   };
 
   return (
     <div>
-      {!showCollectionForm && (
-        <Button variant="contained" onClick={handleCreateCollection}>
-          Create New Collection
-        </Button>
+      {!showCollectionInput && (
+        <button onClick={handleCreateCollection}>Create New Collection</button>
       )}
 
-      {showCollectionForm && (
+      {showCollectionInput && (
         <div>
           <input
             type="text"
-            placeholder="Collection Title"
             value={newCollectionTitle}
-            onChange={handleTitleChange}
+            onChange={(e) => setNewCollectionTitle(e.target.value)}
           />
-          <Button variant="contained" onClick={handleSaveCollection}>
-            Save Collection
-          </Button>
-          <Button onClick={handleCancelCollection}>Cancel</Button>
+          <button onClick={handleSaveCollection}>Save Collection</button>
+          <button onClick={handleCancelCollection}>Cancel</button>
         </div>
       )}
 
-      {collections.map((collection, index) => (
+      {collections.map((collection) => (
         <Collection
-          key={index}
+          key={collection.id}
           title={collection.title}
+          backgroundColor={collection.backgroundColor}
           notes={collection.notes}
-          onCreateNote={(newNote) => handleCreateNote(index, newNote)}
+          onDeleteNote={(noteId) => handleDeleteNote(collection.id, noteId)}
+          onUpdateNote={(noteId, updatedTitle, updatedContent) =>
+            handleUpdateNote(collection.id, noteId, updatedTitle, updatedContent)
+          }
+          onAddNote={(note) => {
+            const updatedCollections = collections.map((col) => {
+              if (col.id === collection.id) {
+                return { ...col, notes: [...col.notes, note] };
+              }
+              return col;
+            });
+            setCollections(updatedCollections);
+          }}
         />
       ))}
     </div>
   );
-}
+};
 
 export default NotesPage;

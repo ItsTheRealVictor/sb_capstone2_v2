@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, Button, TextField } from '@mui/material';
 
-const Note = ({ title, content, backgroundColor }) => {
+const Note = ({ id, title, content, onDeleteNote, onUpdateNote }) => {
   const [editing, setEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
   const [editedContent, setEditedContent] = useState(content);
@@ -12,49 +12,38 @@ const Note = ({ title, content, backgroundColor }) => {
 
   const handleSaveNote = () => {
     setEditing(false);
-    // Save the edited title and content
-    setTitle(editedTitle);
-    setContent(editedContent);
+    onUpdateNote(id, editedTitle, editedContent);
   };
 
-  const handleCancelEdit = () => {
+  const handleCancelEditNote = () => {
     setEditing(false);
-    // Reset the edited values back to the original values
     setEditedTitle(title);
     setEditedContent(content);
   };
 
   const handleDeleteNote = () => {
-    // Handle deleting the note
-  };
-
-  const handleTitleChange = (e) => {
-    setEditedTitle(e.target.value);
-  };
-
-  const handleContentChange = (e) => {
-    setEditedContent(e.target.value);
+    onDeleteNote(id);
   };
 
   return (
-    <Card style={{ backgroundColor }}>
+    <Card>
       <CardContent>
         {editing ? (
           <div>
             <TextField
               label="Title"
               value={editedTitle}
-              onChange={handleTitleChange}
+              onChange={(e) => setEditedTitle(e.target.value)}
             />
             <TextField
               label="Content"
               value={editedContent}
-              onChange={handleContentChange}
+              onChange={(e) => setEditedContent(e.target.value)}
             />
             <Button variant="contained" onClick={handleSaveNote}>
               Save Note
             </Button>
-            <Button onClick={handleCancelEdit}>Cancel</Button>
+            <Button onClick={handleCancelEditNote}>Cancel</Button>
           </div>
         ) : (
           <div>
