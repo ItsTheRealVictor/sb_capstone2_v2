@@ -6,23 +6,19 @@ const Note = ({ id, title, content, onDeleteNote, onUpdateNote }) => {
   const [editedTitle, setEditedTitle] = useState(title);
   const [editedContent, setEditedContent] = useState(content);
 
-  const handleEdit = () => {
+  const handleEditNote = () => {
     setEditing(true);
   };
 
-  const handleSave = () => {
+  const handleSaveNote = () => {
     setEditing(false);
     onUpdateNote(id, editedTitle, editedContent);
   };
 
-  const handleCancelEdit = () => {
+  const handleCancelEditNote = () => {
     setEditing(false);
     setEditedTitle(title);
     setEditedContent(content);
-  };
-
-  const handleDelete = () => {
-    onDeleteNote();
   };
 
   return (
@@ -39,19 +35,17 @@ const Note = ({ id, title, content, onDeleteNote, onUpdateNote }) => {
             value={editedContent}
             onChange={(e) => setEditedContent(e.target.value)}
           />
-          <Button variant="contained" onClick={handleSave}>
-            Save
+          <Button variant="contained" onClick={handleSaveNote}>
+            Save Note
           </Button>
-          <Button onClick={handleCancelEdit}>Cancel</Button>
+          <Button onClick={handleCancelEditNote}>Cancel</Button>
         </div>
       ) : (
         <div>
           <h4>{editedTitle}</h4>
           <p>{editedContent}</p>
-          <Button onClick={handleEdit}>Edit</Button>
-          <Button variant="contained" color="error" onClick={handleDelete}>
-            Delete
-          </Button>
+          <Button onClick={handleEditNote}>Edit Note</Button>
+          <Button onClick={() => onDeleteNote(id)}>Delete Note</Button>
         </div>
       )}
     </div>

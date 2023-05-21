@@ -77,15 +77,13 @@ const Collection = ({
 
   const handleDeleteCollection = () => {
     onDeleteCollection(id);
-  };
+};
 
-  const handleSaveCollection = () => {
-    const collectionData = {
-      title: editedTitle,
-      notes: notes.map(({ id, title, content }) => ({ id, title, content }))
-    };
-    onSaveCollection(collectionData);
-  };
+const handleSaveCollection = () => {
+    onSaveCollection({ id, title: editedTitle, backgroundColor: editedColor, notes });
+};
+
+
 
   return (
     <Card style={{ backgroundColor: editedColor }}>
@@ -141,12 +139,12 @@ const Collection = ({
             <Button variant="contained" onClick={handleAddNote}>
               Add Note
             </Button>
-            <Button variant="contained" onClick={handleSaveCollection}>
-              Save Collection
-            </Button>
-            <Button variant="contained" color="error" onClick={handleDeleteCollection}>
+            <Button variant="contained" onClick={handleDeleteCollection}>
               Delete Collection
             </Button>
+            <Button variant="contained" onClick={() => onSaveCollection({ id, title: editedTitle, backgroundColor: editedColor, notes })}>
+    Save Collection
+</Button>
           </div>
         )}
       </CardContent>

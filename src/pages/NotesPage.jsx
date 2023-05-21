@@ -8,7 +8,7 @@ const NotesPage = () => {
   const [savedCollections, setSavedCollections] = useState([]);
 
   const handleCreateCollection = () => {
-    setCollections((prevCollections) => [
+    setCollections(prevCollections => [
       ...prevCollections,
       {
         id: Date.now(),
@@ -20,17 +20,27 @@ const NotesPage = () => {
   };
 
   const handleDeleteCollection = (collectionId) => {
-    setCollections((prevCollections) =>
-      prevCollections.filter((collection) => collection.id !== collectionId)
+    setCollections(prevCollections =>
+        prevCollections.filter(collection => collection.id !== collectionId)
     );
-    setSavedCollections((prevCollections) =>
-      prevCollections.filter((collection) => collection.id !== collectionId)
+    setSavedCollections(prevCollections =>
+        prevCollections.filter(collection => collection.id !== collectionId)
     );
-  };
+};
+
+const handleSaveCollection = (collection) => {
+    setSavedCollections(prevCollections => [
+        ...prevCollections.filter((prevCollection) => prevCollection.id !== collection.id),
+        collection
+    ]);
+};
+
+  
+
 
   const handleAddNote = (collectionId, note) => {
-    setCollections((prevCollections) =>
-      prevCollections.map((collection) => {
+    setCollections(prevCollections =>
+      prevCollections.map(collection => {
         if (collection.id === collectionId) {
           return {
             ...collection,
@@ -43,12 +53,12 @@ const NotesPage = () => {
   };
 
   const handleDeleteNote = (collectionId, noteId) => {
-    setCollections((prevCollections) =>
-      prevCollections.map((collection) => {
+    setCollections(prevCollections =>
+      prevCollections.map(collection => {
         if (collection.id === collectionId) {
           return {
             ...collection,
-            notes: collection.notes.filter((note) => note.id !== noteId)
+            notes: collection.notes.filter(note => note.id !== noteId)
           };
         }
         return collection;
@@ -57,12 +67,12 @@ const NotesPage = () => {
   };
 
   const handleUpdateNote = (collectionId, noteId, updatedTitle, updatedContent) => {
-    setCollections((prevCollections) =>
-      prevCollections.map((collection) => {
+    setCollections(prevCollections =>
+      prevCollections.map(collection => {
         if (collection.id === collectionId) {
           return {
             ...collection,
-            notes: collection.notes.map((note) => {
+            notes: collection.notes.map(note => {
               if (note.id === noteId) {
                 return {
                   ...note,
@@ -80,8 +90,8 @@ const NotesPage = () => {
   };
 
   const handleUpdateCollection = (collectionId, updatedCollection) => {
-    setCollections((prevCollections) =>
-      prevCollections.map((collection) => {
+    setCollections(prevCollections =>
+      prevCollections.map(collection => {
         if (collection.id === collectionId) {
           return {
             ...collection,
@@ -93,18 +103,11 @@ const NotesPage = () => {
     );
   };
 
-  const handleSaveCollection = (collectionData) => {
-    setSavedCollections((prevCollections) => [
-      ...prevCollections,
-      { id: Date.now(), ...collectionData }
-    ]);
-    setCollections((prevCollections) => prevCollections.filter((collection) => collection.id !== collectionData.id));
-  };
 
   return (
     <div>
       <Button onClick={handleCreateCollection}>Create New Collection</Button>
-      {collections.map((collection) => (
+      {collections.map(collection => (
         <Collection
           key={collection.id}
           id={collection.id}
@@ -121,7 +124,7 @@ const NotesPage = () => {
           onSaveCollection={handleSaveCollection}
         />
       ))}
-      {savedCollections.length > 0 && <CollectionList collections={savedCollections} />}
+      <CollectionList collections={savedCollections} />
     </div>
   );
 };
