@@ -3,7 +3,18 @@ import { Card, CardContent, Typography, Button, TextField } from '@mui/material'
 import { ChromePicker } from 'react-color';
 import Note from './Note';
 
-const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateNote, onAddNote, onDeleteCollection }) => {
+const Collection = ({
+  id,
+  title,
+  backgroundColor,
+  notes,
+  onDeleteNote,
+  onUpdateNote,
+  onAddNote,
+  onDeleteCollection,
+  onUpdateCollection,
+  onSaveCollection
+}) => {
   const [editingTitle, setEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
   const [editingColor, setEditingColor] = useState(false);
@@ -17,7 +28,7 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
 
   const handleSaveTitle = () => {
     setEditingTitle(false);
-    onUpdateNote(id, { title: editedTitle, backgroundColor: editedColor, notes });
+    onUpdateCollection(id, { title: editedTitle, backgroundColor: editedColor, notes });
   };
 
   const handleCancelEditTitle = () => {
@@ -35,7 +46,7 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
 
   const handleSaveColor = () => {
     setEditingColor(false);
-    onUpdateNote(id, { title: editedTitle, backgroundColor: editedColor, notes });
+    onUpdateCollection(id, { title: editedTitle, backgroundColor: editedColor, notes });
   };
 
   const handleCancelEditColor = () => {
@@ -48,7 +59,7 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
       const newNote = {
         id: Date.now(),
         title: newNoteTitle,
-        content: newNoteContent,
+        content: newNoteContent
       };
       onAddNote(newNote);
       setNewNoteTitle('');
@@ -66,6 +77,14 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
 
   const handleDeleteCollection = () => {
     onDeleteCollection(id);
+  };
+
+  const handleSaveCollection = () => {
+    const collectionData = {
+      title: editedTitle,
+      notes: notes.map(({ id, title, content }) => ({ id, title, content }))
+    };
+    onSaveCollection(collectionData);
   };
 
   return (
@@ -121,6 +140,9 @@ const Collection = ({ id, title, backgroundColor, notes, onDeleteNote, onUpdateN
             />
             <Button variant="contained" onClick={handleAddNote}>
               Add Note
+            </Button>
+            <Button variant="contained" onClick={handleSaveCollection}>
+              Save Collection
             </Button>
             <Button variant="contained" color="error" onClick={handleDeleteCollection}>
               Delete Collection
